@@ -11,6 +11,8 @@
 
 
 #define MESSAGE_SIZE 512 //size of message
+
+char exitMessage[MESSAGE_SIZE] = "EXIT";
 char board[10] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
 void initializeBoard(){
@@ -164,6 +166,7 @@ int your_turn(char PlayerChar, int other_socket)
     prevMove = playGame(PlayerChar, prevMove);
     
     sprintf(move, "%d", current_move);
+        
     if(send(other_socket, &move, MESSAGE_SIZE, 0) == -1)
     {
         printf("Can't send move\n");
@@ -194,11 +197,16 @@ int opponent_turn(char OpponentChar, int other_socket)
         printf("Failed listening for a message\n");
         exit(-12);
     }
+
     printf("Wainting for the opponent's move...\n");
     if(recv(other_socket, &move, MESSAGE_SIZE, 0) == -1)
     {
         printf("Can't receive message\n");
         exit(-13);
+    }
+    if(strcmp(move, exitMessage) == 0)
+    {
+        exit(0);
     }
     
     printf("Opponent's move: %c\n", move[0]);
@@ -236,10 +244,32 @@ int Game(char PlayerChar, char OpponentChar, int current_socket, int other_socke
 
 void on_main_window_destroy(){
     
+
+    if(send(client_socket, exitMessage, MESSAGE_SIZE, 0) == -1)
+    {
+        printf("Not good 1");
+    }
+    if(send(server_socket, exitMessage, MESSAGE_SIZE, 0) == -1)
+    {
+        printf("Not good 2");
+    }
+    printf("Sent exit message\n");
+
     exit(0);
 }
 
 void on_btn_exit_game_clicked(){
+  
+    if(send(client_socket, exitMessage, MESSAGE_SIZE, 0) == -1)
+    {
+        printf("Not good 3 ");
+    }
+    if(send(server_socket, exitMessage, MESSAGE_SIZE, 0) == -1)
+    {
+        printf("Not good 4");
+    }
+        printf("Sent exit message\n");
+
     exit(0);
 }
 
