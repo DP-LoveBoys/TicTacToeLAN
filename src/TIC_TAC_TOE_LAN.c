@@ -162,8 +162,13 @@ int your_turn(char PlayerChar, int other_socket)
     
     read_position();
     prevMove = playGame(PlayerChar, prevMove);
+    
     sprintf(move, "%d", current_move);
-    send(other_socket, &move, MESSAGE_SIZE, 0);
+    if(send(other_socket, &move, MESSAGE_SIZE, 0) == -1)
+    {
+        printf("Can't send move\n");
+        exit(-11);
+    }
     
     if (checkWin() == 1)
     {
@@ -184,10 +189,18 @@ int opponent_turn(char OpponentChar, int other_socket)
     char move[MESSAGE_SIZE];
     
     if (other_socket != server_socket)
-        listen(server_socket,5);
-    
+    if(listen(server_socket, 5) == -1)
+    {
+        printf("Failed listening for a message\n");
+        exit(-12);
+    }
     printf("Wainting for the opponent's move...\n");
-    recv(other_socket,&move,MESSAGE_SIZE,0);
+    if(recv(other_socket, &move, MESSAGE_SIZE, 0) == -1)
+    {
+        printf("Can't receive message\n");
+        exit(-13);
+    }
+    
     printf("Opponent's move: %c\n", move[0]);
     current_move = atoi(move);
     prevMove = playGame(OpponentChar, prevMove);
@@ -232,17 +245,14 @@ void on_btn_exit_game_clicked(){
 
 int main(int argc,char *argv[])
 {
-    //printf("\t%d=argc,argv= %s\n%s\n%s\n",argc,argv[0],argv[1],argv[2]);
-    
-
     if(argc != 3)
     {
-        printf("\tCorrect usage:program_name s/c portnumber\n");
-        exit(-1);
+        printf("\tCorrect usage: program_name s/c portnumber\n");
+        exit(-10);
     }
-    if(argv[1][0]!='c' && argv[1][0]!='s')
+    if(argv[1][0] !='c' && argv[1][0] != 's')
     {
-        printf("use s/c(server/client)\n");
+        printf("Use s/c (server/client)\n");
     }
     
     //interface elements
@@ -262,22 +272,23 @@ int main(int argc,char *argv[])
     }
     
     window=gtk_builder_get_object(builder,"window_main");
-    g_signal_connect(window,"destroy",G_CALLBACK(gtk_main_quit),NULL);
+    g_signal_connect(window,"destroy",G_CALLBACK(gtk_main_quit), NULL);
     
     exit_button=gtk_builder_get_object(builder,"btn_exit_game");
-    g_signal_connect(exit_button,"clicked",G_CALLBACK(on_btn_exit_game_clicked),NULL);
+    g_signal_connect(exit_button,"clicked",G_CALLBACK(on_btn_exit_game_clicked), NULL);
     
     
     
     
     //network connection
-    int PORT=atoi(argv[2]); // PORT from command line
-    char selection=argv[1][0];
+    int PORT = atoi(argv[2]); // PORT from command line
+    char selection = argv[1][0];
     
-    if(selection == 's') // server/host part
+    if(selection == 's') // server (host) part
     {
         srand(time(0));
-        int random_number = rand()%2;
+        int random_number = rand() % 2; //Random number to determine which player goes first 
+        
         if (random_number == 0)
         {
             PlayerChar = 'X';
@@ -289,24 +300,36 @@ int main(int argc,char *argv[])
             OpponentChar = 'X';
         }
         
-        if((server_socket=socket(AF_INET,SOCK_STREAM,0))==-1)
+        if((server_socket=socket(AF_INET,SOCK_STREAM, 0)) == -1)
         {
             printf("Socket error\n");
-            exit(-1);
+            exit(-2);
         }
 
         struct sockaddr_in server_adr;
-        server_adr.sin_family=AF_INET;
-        server_adr.sin_port= htons(PORT);
+        server_adr.sin_family = AF_INET;
+        server_adr.sin_port = htons(PORT);
         server_adr.sin_addr.s_addr = INADDR_ANY;
 
-        bind(server_socket,(struct sockaddr *)&server_adr,sizeof(server_adr));
-
-        listen(server_socket,5);
+        if(bind(server_socket, (struct sockaddr *)&server_adr, sizeof(server_adr)) == -1)
+        {
+            printf("Error at bind, server side\n");
+            exit(-2);
+        }
+        
         printf("Waiting for the opponent to connect...\n");
+        if(listen(server_socket, 5) == -1)
+        {
+            printf("Error while listening\n");
+            exit(-3);
+        }
 
-        client_socket=accept(server_socket,NULL,NULL);
-
+        client_socket = accept(server_socket, NULL, NULL); //NULL, we don't use peer to peer
+        if(client_socket == -1)
+        {
+            printf("Error while connecting\n");
+            exit(-4);
+        }
         printf("The game is now started!\n");
         
         g_object_unref(builder);
@@ -317,11 +340,13 @@ int main(int argc,char *argv[])
         sprintf(message, "%c", OpponentChar);
         
         printf("You are playing as %c\n", PlayerChar);
-        
-        send(client_socket, message, MESSAGE_SIZE, 0);
+        if(send(client_socket, message, MESSAGE_SIZE, 0) == -1)
+        {
+            printf("Error when sending message to client\n");
+            exit(-5);
+        }
         
         initializeBoard();
-        
         while(1)
         {
             if (Game(PlayerChar, OpponentChar, server_socket, client_socket) == 1)
@@ -329,17 +354,16 @@ int main(int argc,char *argv[])
         }
         
         //close connection
-        close(server_socket);
+        close(server_socket); //if error, it closes anyway
     }
     else //client side
     {
         int conn;
         
-        
-        if((server_socket=socket(AF_INET,SOCK_STREAM,0))==-1)
+        if((server_socket = socket(AF_INET, SOCK_STREAM, 0)) == -1)
         {
-            printf("Socket error\n");
-            exit(-1);
+            printf("Socket error, client side\n");
+            exit(-6);
         }
 
         struct sockaddr_in server_adr;
@@ -348,13 +372,18 @@ int main(int argc,char *argv[])
         server_adr.sin_addr.s_addr = INADDR_ANY;
 
 
-        if( (conn = connect(server_socket,(struct sockaddr *)&server_adr,sizeof(server_adr)))==-1)
+        if( (conn = connect(server_socket, (struct sockaddr *)&server_adr, sizeof(server_adr))) == -1)
         {
-            printf("Error connecting\n");
-            exit(-1);
+            printf("Error connecting to server\n");
+            exit(-7);
         }
-        client_socket = socket(PF_INET, SOCK_STREAM, 0);
         
+        client_socket = socket(PF_INET, SOCK_STREAM, 0);
+        if(client_socket == -1)
+        {
+            printf("Error building client socket\n");
+            exit(-8);
+        }
         printf("The game is now started!\n");
         
         g_object_unref(builder);
@@ -362,8 +391,13 @@ int main(int argc,char *argv[])
         gtk_main();
         
         char message3[MESSAGE_SIZE];
-        recv(server_socket,&message3,MESSAGE_SIZE,0);
-        printf("You are playing as %s\n",message3);
+        
+        if(recv(server_socket, &message3, MESSAGE_SIZE, 0) == -1)
+        {
+            printf("Error fetching data from server\n");
+            exit(-9);
+        }
+        printf("You are playing as %s\n", message3);
         
         if (message3[0] == '0')
         {
