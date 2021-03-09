@@ -235,6 +235,7 @@ int Game(char PlayerChar, char OpponentChar, int current_socket, int other_socke
 }
 
 void on_main_window_destroy(){
+    
     exit(0);
 }
 
