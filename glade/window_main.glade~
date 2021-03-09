@@ -6,55 +6,55 @@
     <property name="name">0</property>
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">../images/empty.png</property>
+    <property name="pixbuf">empty.png</property>
   </object>
   <object class="GtkImage" id="image1">
     <property name="name">1</property>
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">../images/empty.png</property>
+    <property name="pixbuf">empty.png</property>
   </object>
   <object class="GtkImage" id="image2">
     <property name="name">2</property>
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">../images/empty.png</property>
+    <property name="pixbuf">empty.png</property>
   </object>
   <object class="GtkImage" id="image3">
     <property name="name">3</property>
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">../images/empty.png</property>
+    <property name="pixbuf">empty.png</property>
   </object>
   <object class="GtkImage" id="image4">
     <property name="name">4</property>
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">../images/empty.png</property>
+    <property name="pixbuf">empty.png</property>
   </object>
   <object class="GtkImage" id="image5">
     <property name="name">5</property>
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">../images/empty.png</property>
+    <property name="pixbuf">empty.png</property>
   </object>
   <object class="GtkImage" id="image6">
     <property name="name">6</property>
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">../images/empty.png</property>
+    <property name="pixbuf">empty.png</property>
   </object>
   <object class="GtkImage" id="image7">
     <property name="name">7</property>
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">../images/empty.png</property>
+    <property name="pixbuf">empty.png</property>
   </object>
   <object class="GtkImage" id="image8">
     <property name="name">8</property>
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">../images/empty.png</property>
+    <property name="pixbuf">empty.png</property>
   </object>
   <object class="GtkWindow" id="window_main">
     <property name="name">window_main</property>

@@ -7,6 +7,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <time.h>
+#include <gtk/gtk.h>
 
 
 #define MESSAGE_SIZE 512 //size of message
@@ -220,9 +221,20 @@ int Game(char PlayerChar, char OpponentChar, int current_socket, int other_socke
     return 0;
 }
 
+void on_main_window_destroy(){
+    exit(0);
+}
+
+void on_btn_exit_game_clicked(){
+    exit(0);
+}
+
+
 int main(int argc,char *argv[])
 {
     //printf("\t%d=argc,argv= %s\n%s\n%s\n",argc,argv[0],argv[1],argv[2]);
+    
+
     if(argc != 3)
     {
         printf("\tCorrect usage:program_name s/c portnumber\n");
@@ -232,7 +244,33 @@ int main(int argc,char *argv[])
     {
         printf("use s/c(server/client)\n");
     }
-
+    
+    //interface elements
+    GObject *window;
+    GObject *exit_button;
+    GtkBuilder *builder;
+    GError *err=NULL;
+    
+    //interface initialization
+    gtk_init(&argc,&argv);
+    
+    builder=gtk_builder_new();
+    if(gtk_builder_add_from_file(builder,"glade/window_main.glade",&err)==0){
+        g_printerr("Error loading glade file: %s\n",err->message);
+        g_clear_error(&err);
+        exit(-1);
+    }
+    
+    window=gtk_builder_get_object(builder,"window_main");
+    g_signal_connect(window,"destroy",G_CALLBACK(gtk_main_quit),NULL);
+    
+    exit_button=gtk_builder_get_object(builder,"btn_exit_game");
+    g_signal_connect(exit_button,"clicked",G_CALLBACK(on_btn_exit_game_clicked),NULL);
+    
+    
+    
+    
+    //network connection
     int PORT=atoi(argv[2]); // PORT from command line
     char selection=argv[1][0];
     
@@ -270,6 +308,10 @@ int main(int argc,char *argv[])
         client_socket=accept(server_socket,NULL,NULL);
 
         printf("The game is now started!\n");
+        
+        g_object_unref(builder);
+        gtk_widget_show((GtkWidget*)window);
+        gtk_main();
         
         char message[MESSAGE_SIZE];
         sprintf(message, "%c", OpponentChar);
@@ -315,6 +357,10 @@ int main(int argc,char *argv[])
         
         printf("The game is now started!\n");
         
+        g_object_unref(builder);
+        gtk_widget_show((GtkWidget*)window);
+        gtk_main();
+        
         char message3[MESSAGE_SIZE];
         recv(server_socket,&message3,MESSAGE_SIZE,0);
         printf("You are playing as %s\n",message3);
@@ -340,3 +386,20 @@ int main(int argc,char *argv[])
     }
     return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
