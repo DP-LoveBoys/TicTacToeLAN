@@ -15,6 +15,27 @@
 char exitMessage[MESSAGE_SIZE] = "EXIT";
 char board[10] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
+typedef struct{
+    GtkWidget *imgs[9];
+    GtkWidget *label_status;
+}app_widgets;
+
+app_widgets *widgets;
+
+enum{
+    Move,
+    Wait,
+    Over
+}states;
+
+enum{
+    Server,
+    Client
+}identities;
+
+int state=Wait;
+int identity;
+
 void initializeBoard(){
         printf(" _ _ _ _ _ _ \n");
         printf("| %c | %c | %c |\n", board[1], board[2], board[3]);
@@ -109,13 +130,14 @@ int checkDraw()
     return draw;
 }
 
-void read_position()
+/*void read_position()
 {
     int position;
     
+    state=Move;
+    
     printf("It's time to make a move, %c\nYour move: ", PlayerChar);
-    while(1)
-    {
+    while(move_done==0); //commented code only for reading values from terminal
         scanf("%d", &position);
         if(!validInput(position))
         {
@@ -130,8 +152,9 @@ void read_position()
         break;
     }
     
-    current_move = position;
-}
+    //current_move = position;
+    state=Wait;
+}*/
 
 char playGame(char player, char prevMove)
 {
@@ -158,50 +181,87 @@ char playGame(char player, char prevMove)
     return move;
 }
 
-int your_turn(char PlayerChar, int other_socket)
+int your_turn()
 {
     char move[MESSAGE_SIZE];
+    int other_socket;
+    //read_position();
     
-    read_position();
+    
+    
     prevMove = playGame(PlayerChar, prevMove);
     
     sprintf(move, "%d", current_move);
         
+    if(identity==Server){         // who am I?
+        other_socket=client_socket;
+    }
+    else{
+        other_socket=server_socket;
+    }
+    
+    //make necessary checks
+    if (checkWin() == 1)
+    {
+        state=Over;
+        gtk_label_set_text(GTK_LABEL(widgets->label_status), "You are the winner");
+        printf("You won!\n");
+    }
+    if (checkDraw() == 1)
+    {
+        state=Over;
+        gtk_label_set_text(GTK_LABEL(widgets->label_status), "Draw. Exit game manu");
+        printf("Draw!\n");
+    }
+    
+    
+    //send move to opponent
     if(send(other_socket, &move, MESSAGE_SIZE, 0) == -1)
     {
         printf("Can't send move\n");
         exit(-11);
     }
     
-    if (checkWin() == 1)
-    {
-        printf("You won!\n");
-        return 1;
-    }
-    if (checkDraw() == 1)
-    {
-        printf("Draw!\n");
-        return 1;
-    }
+    printf("Sent move\n");
+    
+    
     
     return 0;
 }
 
-int opponent_turn(char OpponentChar, int other_socket)
+int opponent_turn()
 {
     char move[MESSAGE_SIZE];
+    int opponent_socket;
+    int my_socket;
     
-    if (other_socket != server_socket)
-    if(listen(server_socket, 5) == -1)
+    printf("Preparing to listen.\n");
+    
+    if(identity==Server){ // who am I?
+        
+        my_socket=server_socket;
+        opponent_socket=client_socket;
+    }
+    else{
+        
+        my_socket=client_socket;
+        opponent_socket=server_socket;
+    }
+    
+    
+    gtk_label_set_text(GTK_LABEL(widgets->label_status), "Wait for opponent to move...");
+    if(listen(my_socket, 5) == -1)
     {
-        printf("Failed listening for a message\n");
+        
+        perror("listen: ");
         exit(-12);
     }
 
     printf("Wainting for the opponent's move...\n");
-    if(recv(other_socket, &move, MESSAGE_SIZE, 0) == -1)
+    if(recv(opponent_socket, &move, MESSAGE_SIZE, 0) == -1)
     {
         printf("Can't receive message\n");
+        perror("recv: ");
         exit(-13);
     }
     if(strcmp(move, exitMessage) == 0)
@@ -212,22 +272,30 @@ int opponent_turn(char OpponentChar, int other_socket)
     printf("Opponent's move: %c\n", move[0]);
     current_move = atoi(move);
     prevMove = playGame(OpponentChar, prevMove);
+    gtk_image_set_from_file(GTK_IMAGE(widgets->imgs[current_move-1]), OpponentChar == '0' ? "images/0.png" : "images/x.png");
     
     if (checkWin() == 1)
     {
+        gtk_label_set_text(GTK_LABEL(widgets->label_status), "You are a loser");
         printf("Your opponent won!\n");
-        return 1;
+        state=Over;
     }
     if (checkDraw() == 1)
     {
+        gtk_label_set_text(GTK_LABEL(widgets->label_status), "Draw. Exit game manually");
         printf("Draw!\n");
-        return 1;
-    }   
+        state=Over;
+    }
+    
+    if(state!=Over){
+        gtk_label_set_text(GTK_LABEL(widgets->label_status), "Make a move");
+        state=Move;
+    }
     
     return 0;
 }
 
-int Game(char PlayerChar, char OpponentChar, int current_socket, int other_socket)
+/*int Game(char PlayerChar, char OpponentChar, int current_socket, int other_socket)
 {
     if (PlayerChar == 'X')
     {
@@ -240,39 +308,58 @@ int Game(char PlayerChar, char OpponentChar, int current_socket, int other_socke
             return 1;
     }
     return 0;
-}
+}*/
 
 void on_main_window_destroy(){
     
-
-    if(send(client_socket, exitMessage, MESSAGE_SIZE, 0) == -1)
-    {
-        printf("Not good 1");
-    }
-    if(send(server_socket, exitMessage, MESSAGE_SIZE, 0) == -1)
-    {
-        printf("Not good 2");
-    }
-    printf("Sent exit message\n");
-
     exit(0);
 }
 
 void on_btn_exit_game_clicked(){
   
-    if(send(client_socket, exitMessage, MESSAGE_SIZE, 0) == -1)
-    {
-        printf("Not good 3 ");
-    }
-    if(send(server_socket, exitMessage, MESSAGE_SIZE, 0) == -1)
-    {
-        printf("Not good 4");
-    }
-        printf("Sent exit message\n");
-
     exit(0);
 }
 
+void on_btn_clicked(GtkButton *button,app_widgets *widgets){
+    printf("Clicked\n");
+    
+    int btn_num;
+    
+    if(state!=Move){
+        return;
+    }
+    btn_num = gtk_widget_get_name(GTK_WIDGET(button))[0] - '0';// find button that was pressed
+    btn_num++; // in glade index starts at 0
+    
+    printf("btn_num=%d\n",btn_num);
+    
+    
+    //necessary checks
+    if(!validInput(btn_num)){
+        printf("Invalid move, try again\n");
+        return;
+    }
+    if(!validPosition(btn_num)){
+        printf("That spot is already taken, try again\n");
+        return;
+    }
+    
+    // move is ok, put image 
+    gtk_image_set_from_file(GTK_IMAGE(widgets->imgs[btn_num-1]), PlayerChar == '0' ? "images/0.png" : "images/x.png");
+    
+    current_move=btn_num;
+    
+    state=Wait; // block the other buttons until opponent made his move
+    
+    gtk_label_set_text(GTK_LABEL(widgets->label_status), "Wait for opponent to move...");
+    
+    your_turn(); // send move to opponent
+    
+    if(state!=Over){ // if game is not over listen for next opponent move
+        opponent_turn(); 
+    }
+    
+}
 
 int main(int argc,char *argv[])
 {
@@ -308,6 +395,23 @@ int main(int argc,char *argv[])
     exit_button=gtk_builder_get_object(builder,"btn_exit_game");
     g_signal_connect(exit_button,"clicked",G_CALLBACK(on_btn_exit_game_clicked), NULL);
     
+    widgets=g_slice_new(app_widgets);
+    if(!widgets){
+        printf("Error allocating memory!\n");
+        exit(-15);
+    }
+    
+    gchar str_img[] = "img_0";
+    
+     // Get a pointer to each image
+    for (gint i = 0; i < 9; i++) {
+        str_img[4] = i + '0';
+        widgets->imgs[i] = GTK_WIDGET(gtk_builder_get_object(builder, str_img));
+    }
+    // Get a pointer to the status label
+    widgets->label_status = GTK_WIDGET(gtk_builder_get_object(builder, "label_status"));
+    
+    gtk_builder_connect_signals(builder, widgets);
     
     
     
@@ -317,6 +421,7 @@ int main(int argc,char *argv[])
     
     if(selection == 's') // server (host) part
     {
+        identity=Server;
         srand(time(0));
         int random_number = rand() % 2; //Random number to determine which player goes first 
         
@@ -324,9 +429,11 @@ int main(int argc,char *argv[])
         {
             PlayerChar = 'X';
             OpponentChar = '0';
+            state=Move;
         }
         else
         {
+            state=Wait;
             PlayerChar = '0';
             OpponentChar = 'X';
         }
@@ -362,10 +469,8 @@ int main(int argc,char *argv[])
             exit(-4);
         }
         printf("The game is now started!\n");
-        
-        g_object_unref(builder);
-        gtk_widget_show((GtkWidget*)window);
-        gtk_main();
+        printf("Server socket=%d\n",server_socket);
+        printf("Client sockect=%d\n",client_socket);
         
         char message[MESSAGE_SIZE];
         sprintf(message, "%c", OpponentChar);
@@ -378,11 +483,25 @@ int main(int argc,char *argv[])
         }
         
         initializeBoard();
-        while(1)
+        /*while(1)
         {
             if (Game(PlayerChar, OpponentChar, server_socket, client_socket) == 1)
                 break;
+        }*/
+        
+        
+        
+        if(state==Wait){
+            gtk_label_set_text(GTK_LABEL(widgets->label_status), "Wait for opponent to move...");
+            opponent_turn();
+            
         }
+        
+        gtk_label_set_text(GTK_LABEL(widgets->label_status), "Make a move");
+        
+        gtk_widget_show((GtkWidget*)window);
+        gtk_main();
+        
         
         //close connection
         close(server_socket); //if error, it closes anyway
@@ -390,6 +509,7 @@ int main(int argc,char *argv[])
     else //client side
     {
         int conn;
+        identity=Client;
         
         if((server_socket = socket(AF_INET, SOCK_STREAM, 0)) == -1)
         {
@@ -416,10 +536,10 @@ int main(int argc,char *argv[])
             exit(-8);
         }
         printf("The game is now started!\n");
+        printf("Server socket=%d\n",server_socket);
+        printf("Client sockect=%d\n",client_socket);
         
-        g_object_unref(builder);
-        gtk_widget_show((GtkWidget*)window);
-        gtk_main();
+        
         
         char message3[MESSAGE_SIZE];
         
@@ -432,23 +552,43 @@ int main(int argc,char *argv[])
         
         if (message3[0] == '0')
         {
+            state=Wait;
             PlayerChar = '0';
             OpponentChar = 'X';
         }
         else
         {
+            state=Move;
             PlayerChar = 'X';
             OpponentChar = '0';
         }
         
         initializeBoard();
         
-        while(1)
+        
+        
+        /*while(1)
         {
             if (Game(PlayerChar, OpponentChar, client_socket, server_socket) == 1)
                 break;
+        }*/
+        
+        
+        
+        if(state==Wait){
+            gtk_label_set_text(GTK_LABEL(widgets->label_status), "Wait for opponent to move...");
+            opponent_turn();
         }
+        
+        gtk_label_set_text(GTK_LABEL(widgets->label_status), "Make a move");
+        
+        gtk_widget_show((GtkWidget*)window);
+        gtk_main();
+        
     }
+    
+    g_object_unref(builder);
+    g_slice_free(app_widgets,widgets);
     return 0;
 }
 

@@ -8,12 +8,14 @@ CC=gcc
 #flags
 CFLAGS=-Wall
 
+PTHREAD=-pthread
+
 #gtk
 GTKLIB=`pkg-config --cflags --libs gtk+-3.0`
 
 # linker
 LD=gcc
-LDFLAGS=$(GTKLIB) -export-dynamic
+LDFLAGS=$(PTHREAD) $(GTKLIB) -export-dynamic
 
 OBJS= game.o
 

@@ -2,59 +2,59 @@
 <!-- Generated with glade 3.20.0 -->
 <interface>
   <requires lib="gtk+" version="3.22"/>
-  <object class="GtkImage" id="image0">
-    <property name="name">0</property>
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="pixbuf">empty.png</property>
-  </object>
-  <object class="GtkImage" id="image1">
-    <property name="name">1</property>
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="pixbuf">empty.png</property>
-  </object>
-  <object class="GtkImage" id="image2">
-    <property name="name">2</property>
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="pixbuf">empty.png</property>
-  </object>
-  <object class="GtkImage" id="image3">
-    <property name="name">3</property>
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="pixbuf">empty.png</property>
-  </object>
-  <object class="GtkImage" id="image4">
-    <property name="name">4</property>
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="pixbuf">empty.png</property>
-  </object>
-  <object class="GtkImage" id="image5">
-    <property name="name">5</property>
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="pixbuf">empty.png</property>
-  </object>
-  <object class="GtkImage" id="image6">
+  <object class="GtkImage" id="img_0">
     <property name="name">6</property>
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">empty.png</property>
+    <property name="pixbuf">../images/empty.png</property>
   </object>
-  <object class="GtkImage" id="image7">
+  <object class="GtkImage" id="img_1">
     <property name="name">7</property>
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">empty.png</property>
+    <property name="pixbuf">../images/empty.png</property>
   </object>
-  <object class="GtkImage" id="image8">
+  <object class="GtkImage" id="img_2">
     <property name="name">8</property>
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">empty.png</property>
+    <property name="pixbuf">../images/empty.png</property>
+  </object>
+  <object class="GtkImage" id="img_3">
+    <property name="name">3</property>
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixbuf">../images/empty.png</property>
+  </object>
+  <object class="GtkImage" id="img_4">
+    <property name="name">4</property>
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixbuf">../images/empty.png</property>
+  </object>
+  <object class="GtkImage" id="img_5">
+    <property name="name">5</property>
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixbuf">../images/empty.png</property>
+  </object>
+  <object class="GtkImage" id="img_6">
+    <property name="name">0</property>
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixbuf">../images/empty.png</property>
+  </object>
+  <object class="GtkImage" id="img_7">
+    <property name="name">1</property>
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixbuf">../images/empty.png</property>
+  </object>
+  <object class="GtkImage" id="img_8">
+    <property name="name">2</property>
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixbuf">../images/empty.png</property>
   </object>
   <object class="GtkWindow" id="window_main">
     <property name="name">window_main</property>
@@ -89,12 +89,12 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
-              <object class="GtkButton" id="btn_0">
+              <object class="GtkButton" id="btn_6">
                 <property name="name">0</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="image">image0</property>
+                <property name="image">img_6</property>
                 <signal name="clicked" handler="on_btn_clicked" swapped="no"/>
               </object>
               <packing>
@@ -103,12 +103,13 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="btn_1">
+              <object class="GtkButton" id="btn_7">
                 <property name="name">1</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="image">image1</property>
+                <property name="image">img_7</property>
+                <signal name="clicked" handler="on_btn_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -116,12 +117,13 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="btn_2">
+              <object class="GtkButton" id="btn_8">
                 <property name="name">2</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="image">image2</property>
+                <property name="image">img_8</property>
+                <signal name="clicked" handler="on_btn_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">2</property>
@@ -134,7 +136,8 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="image">image3</property>
+                <property name="image">img_3</property>
+                <signal name="clicked" handler="on_btn_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">0</property>
@@ -147,7 +150,8 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="image">image4</property>
+                <property name="image">img_4</property>
+                <signal name="clicked" handler="on_btn_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -160,7 +164,8 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="image">image5</property>
+                <property name="image">img_5</property>
+                <signal name="clicked" handler="on_btn_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">2</property>
@@ -168,12 +173,13 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="btn_6">
+              <object class="GtkButton" id="btn_0">
                 <property name="name">6</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="image">image6</property>
+                <property name="image">img_0</property>
+                <signal name="clicked" handler="on_btn_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">0</property>
@@ -181,12 +187,13 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="btn_7">
+              <object class="GtkButton" id="btn_1">
                 <property name="name">7</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="image">image7</property>
+                <property name="image">img_1</property>
+                <signal name="clicked" handler="on_btn_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -194,12 +201,12 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="btn_8">
+              <object class="GtkButton" id="btn_2">
                 <property name="name">8</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="image">image8</property>
+                <property name="image">img_2</property>
                 <signal name="clicked" handler="on_btn_clicked" swapped="no"/>
               </object>
               <packing>
