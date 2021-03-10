@@ -73,10 +73,6 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="label" translatable="yes">Click on block to make a move</property>
-            <attributes>
-              <attribute name="weight" value="heavy"/>
-              <attribute name="foreground" value="#efef29292929"/>
-            </attributes>
           </object>
           <packing>
             <property name="expand">False</property>

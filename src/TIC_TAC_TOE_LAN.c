@@ -239,14 +239,19 @@ int your_turn()
     if (checkWin() == 1)
     {
         state=Over;
-        gtk_label_set_text(GTK_LABEL(widgets->label_status), "You are the winner");
+        gchar str_win[] = "<span foreground='green' weight='bold' font='10'>You Win!</span>";
+        gtk_label_set_markup (GTK_LABEL (widgets->label_status), str_win);
+        //gtk_label_set_text(GTK_LABEL(widgets->label_status), "You are the winner");
         printf("%d %d %d\n", winning[0], winning[1], winning[2]);
         printf("You won!\n");
+        gtk_image_set_from_file(GTK_IMAGE(widgets->imgs[winning[0]-1]), PlayerChar == '0' ? "images/0_win.png" : "images/x_win.png");
+        gtk_image_set_from_file(GTK_IMAGE(widgets->imgs[winning[1]-1]), PlayerChar == '0' ? "images/0_win.png" : "images/x_win.png");
+        gtk_image_set_from_file(GTK_IMAGE(widgets->imgs[winning[2]-1]), PlayerChar == '0' ? "images/0_win.png" : "images/x_win.png");
     }
     if (checkDraw() == 1)
     {
         state=Over;
-        gtk_label_set_text(GTK_LABEL(widgets->label_status), "Draw. Exit game manu");
+        gtk_label_set_text(GTK_LABEL(widgets->label_status), "Draw. Exit game manually");
         printf("Draw!\n");
     }
     
@@ -314,9 +319,14 @@ int opponent_turn()
     
     if (checkWin() == 1)
     {
-        gtk_label_set_text(GTK_LABEL(widgets->label_status), "You are a loser");
+        gchar str_win[] = "<span foreground='red' weight='bold' font='10'>You are a loser!</span>";
+        gtk_label_set_markup (GTK_LABEL (widgets->label_status), str_win);
+        //gtk_label_set_text(GTK_LABEL(widgets->label_status), "You are a loser");
         printf("Your opponent won!\n");
         printf("%d %d %d\n", winning[0], winning[1], winning[2]);
+        gtk_image_set_from_file(GTK_IMAGE(widgets->imgs[winning[0]-1]), OpponentChar == '0' ? "images/0_win.png" : "images/x_win.png");
+        gtk_image_set_from_file(GTK_IMAGE(widgets->imgs[winning[1]-1]), OpponentChar == '0' ? "images/0_win.png" : "images/x_win.png");
+        gtk_image_set_from_file(GTK_IMAGE(widgets->imgs[winning[2]-1]), OpponentChar == '0' ? "images/0_win.png" : "images/x_win.png");
         state=Over;
     }
     if (checkDraw() == 1)
