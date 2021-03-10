@@ -264,8 +264,9 @@ int opponent_turn()
         perror("recv: ");
         exit(-13);
     }
-    if(strcmp(move, exitMessage) == 0)
+    if(strlen(move)!=1)
     {
+        printf("Opponent forfeit\n");
         exit(0);
     }
     
