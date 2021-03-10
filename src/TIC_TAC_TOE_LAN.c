@@ -144,7 +144,7 @@ int checkDiags()
     
     return 0;
 }
-int checkWin()
+int checkWin()  //check if any win combination is achieved and set winning array to winning combination
 {    
     if(checkLines() || checkCols() || checkDiags())
         return 1;
@@ -308,7 +308,7 @@ int opponent_turn()
 
     if(strlen(move)!=1)
     {
-        printf("Opponent forfeit\n");
+        printf("Opponent has forfeited\n");
         exit(0);
     }
     
