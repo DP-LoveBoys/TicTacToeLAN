@@ -12,8 +12,9 @@
 
 #define MESSAGE_SIZE 512 //size of message
 
-char exitMessage[MESSAGE_SIZE] = "EXIT";
 char board[10] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+
+int winning[3] = {0, 0, 0};
 
 typedef struct{
     GtkWidget *imgs[9];
@@ -72,43 +73,79 @@ int validPosition(int position)
 
 int checkLines()
 {
-    if(board[1] == board[2])
-        if(board[2] == board[3])
-            return 1;
-    if(
-        ((board[1] == board[2]) && (board[2] == board[3])) || ((board[4] == board[5]) && (board[5] == board[6])) || ((board[7] == board[8]) && (board[8] == board[9]))
-    ) 
+    
+    if((board[1] == board[2]) && (board[2] == board[3]))
+    {
+        winning[0] = 1; 
+        winning[1] = 2;
+        winning[2] = 3;
         return 1;
+    }
+    else if((board[4] == board[5]) && (board[5] == board[6]))
+    {
+        winning[0] = 4; 
+        winning[1] = 5;
+        winning[2] = 6;
+        return 1;
+    }
+    else if((board[7] == board[8]) && (board[8] == board[9]))
+    {
+        winning[0] = 7; 
+        winning[1] = 8;
+        winning[2] = 9;
+        return 1;
+    }
     
     return 0;
 }
 
 int checkCols()
 {
-    if(
-        ((board[1] == board[4]) && (board[4] == board[7])) || 
-        ((board[2] == board[5]) && (board[5] == board[8])) || 
-        ((board[3] == board[6]) && (board[6] == board[9]))
-    ) 
+    if((board[1] == board[4]) && (board[4] == board[7]))
+    {
+        winning[0] = 1; 
+        winning[1] = 4;
+        winning[2] = 7;
         return 1;
-    
+    }
+    else if((board[2] == board[5]) && (board[5] == board[8]))
+    {
+        winning[0] = 2; 
+        winning[1] = 5;
+        winning[2] = 8;
+        return 1;
+    }
+    else if((board[3] == board[6]) && (board[6] == board[9]))
+    {
+        winning[0] = 3; 
+        winning[1] = 6;
+        winning[2] = 9;
+        return 1;
+    }
     return 0;
 }
 
 int checkDiags()
 {
-    if(
-        ((board[1] == board[5]) && (board[5] == board[9])) || 
-        ((board[3] == board[5]) && (board[5] == board[7]))
-    ) 
+    if((board[1] == board[5]) && (board[5] == board[9]))
+    {
+        winning[0] = 1; 
+        winning[1] = 5;
+        winning[2] = 9;
         return 1;
+    }
+    if((board[3] == board[5]) && (board[5] == board[7]))
+    {
+        winning[0] = 3; 
+        winning[1] = 5;
+        winning[2] = 7;
+        return 1;
+    }
     
     return 0;
 }
 int checkWin()
-{
-    //printf("Checking\n");
-    
+{    
     if(checkLines() || checkCols() || checkDiags())
         return 1;
     return 0;
@@ -130,7 +167,7 @@ int checkDraw()
     return draw;
 }
 
-/*void read_position()
+/*void read_position()      // used to read input from keyboard, deprecated
 {
     int position;
     
@@ -187,8 +224,6 @@ int your_turn()
     int other_socket;
     //read_position();
     
-    
-    
     prevMove = playGame(PlayerChar, prevMove);
     
     sprintf(move, "%d", current_move);
@@ -205,6 +240,7 @@ int your_turn()
     {
         state=Over;
         gtk_label_set_text(GTK_LABEL(widgets->label_status), "You are the winner");
+        printf("%d %d %d\n", winning[0], winning[1], winning[2]);
         printf("You won!\n");
     }
     if (checkDraw() == 1)
@@ -264,6 +300,7 @@ int opponent_turn()
         perror("recv: ");
         exit(-13);
     }
+
     if(strlen(move)!=1)
     {
         printf("Opponent forfeit\n");
@@ -279,6 +316,7 @@ int opponent_turn()
     {
         gtk_label_set_text(GTK_LABEL(widgets->label_status), "You are a loser");
         printf("Your opponent won!\n");
+        printf("%d %d %d\n", winning[0], winning[1], winning[2]);
         state=Over;
     }
     if (checkDraw() == 1)
