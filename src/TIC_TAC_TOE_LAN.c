@@ -10,7 +10,7 @@
 #include <gtk/gtk.h>
 
 
-#define MESSAGE_SIZE 512 //size of message
+#define MESSAGE_SIZE 32 //size of message
 
 char board[10] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
@@ -227,6 +227,8 @@ int your_turn()
     prevMove = playGame(PlayerChar, prevMove);
     
     sprintf(move, "%d", current_move);
+    
+    
         
     if(identity==Server){         // who am I?
         other_socket=client_socket;
@@ -344,7 +346,7 @@ int opponent_turn()
     return 0;
 }
 
-/*int Game(char PlayerChar, char OpponentChar, int current_socket, int other_socket)
+/*int Game(char PlayerChar, char OpponentChar, int current_socket, int other_socket) // not used anymore
 {
     if (PlayerChar == 'X')
     {
@@ -383,6 +385,7 @@ void on_btn_clicked(GtkButton *button,app_widgets *widgets){
     printf("btn_num=%d\n",btn_num);
     
     
+    
     //necessary checks
     if(!validInput(btn_num)){
         printf("Invalid move, try again\n");
@@ -393,14 +396,17 @@ void on_btn_clicked(GtkButton *button,app_widgets *widgets){
         return;
     }
     
+    
     // move is ok, put image 
     gtk_image_set_from_file(GTK_IMAGE(widgets->imgs[btn_num-1]), PlayerChar == '0' ? "images/0.png" : "images/x.png");
     
     current_move=btn_num;
-    
     state=Wait; // block the other buttons until opponent made his move
     
-    gtk_label_set_text(GTK_LABEL(widgets->label_status), "Wait for opponent to move...");
+    
+    gtk_label_set_text(GTK_LABEL(widgets->label_status), "Wait for opponent to move..."); //set label
+    
+    
     
     your_turn(); // send move to opponent
     
@@ -410,8 +416,13 @@ void on_btn_clicked(GtkButton *button,app_widgets *widgets){
     
 }
 
+
+
+
+
 int main(int argc,char *argv[])
 {
+    // command line checks
     if(argc != 3)
     {
         printf("\tCorrect usage: program_name s/c portnumber\n");
@@ -449,6 +460,7 @@ int main(int argc,char *argv[])
         printf("Error allocating memory!\n");
         exit(-15);
     }
+    
     
     gchar str_img[] = "img_0";
     
